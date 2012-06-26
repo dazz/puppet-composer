@@ -2,17 +2,8 @@ class composer($targetdir) {
 
     include composer::params
 
-    # install wget
-    package {"wget":
-        ensure => present,
-    }
-
     file {"$targetdir":
-        ensure => present
-    }
-
-    package {"php5-cli":
-        ensure => present
+        ensure => directory
     }
 
     # trage werte in die php.ini ein
