@@ -1,32 +1,28 @@
 class composer::params {
-	
-    # 'wget' or 'curl'
-    $download_method = $download_method ? {
-        "" => "wget",
-        default => $download_method	
-    }
 
-    $download_url = $download_url ? {
-        "" => "http://getcomposer.org/installer",
-        default => $download_url,
-    }
+  # 'wget' or 'curl'
+  $download_method = $download_method ? {
+    ''      => 'wget',
+    default => $download_method
+  }
 
-    $target_dir = $target_dir ? {
-        "" => "/usr/local/src",
-        default => $target_dir,
-    }
+  $download_url = $download_url ? {
+    ''      => 'http://getcomposer.org/installer',
+    default => $download_url,
+  }
 
-    $exec_download = $exec_download ? {
-        "" => $download_method ? {
-	    'wget'  => 'wget http://getcomposer.org/composer.phar',
-	    'curl'  => 'curl -s http://getcomposer.org/installer | php',
-            default => "curl -s http://getcomposer.org/installer | php"
-        },
-        default => $exec_download
-    }
+  $target_dir = $target_dir ? {
+    ''      => '/usr/local/bin',
+    default => $target_dir,
+  }
 
-    $composer_path = $composer_path ? {
-        "" => "${target_dir}/composer.phar",
-        default => $composer_path
-    }  
-} 
+  $exec_download = $exec_download ? {
+    ''      => $download_method ? {
+      'wget'  => 'wget http://getcomposer.org/composer.phar',
+      'curl'  => 'curl -s http://getcomposer.org/installer | php',
+      default => 'curl -s http://getcomposer.org/installer | php'
+    },
+    default => $exec_download
+  }
+
+}
