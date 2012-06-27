@@ -1,7 +1,6 @@
-class composer($target_dir="/usr/local/bin", $composer_file = "composer") {
+class composer( $target_dir = "/usr/local/bin", $composer_file = "composer" ) {
 
   include augeas
-  include composer::params
 
   package {["curl", "php5-cli"]:
     ensure => present,
@@ -15,19 +14,29 @@ class composer($target_dir="/usr/local/bin", $composer_file = "composer") {
     command     => "curl -s $download_url | php",
     logoutput   => true,
     cwd         => $tmp_path,
-    require     => Package["curl", "php5-cli"],
+    require     => [
+      Package["curl", "php5-cli"],
+      Augeas["whitelist_phar", "allow_url_fopen"],],
     creates     => "$tmp_path/composer.phar",
   }
 
-  # move file
+  # check if directory exists
+  file { "$target_dir":
+    ensure => directory,
+  }
+
+  # move file to target_dir
   file { "$target_dir/$composer_file":
     ensure      => present,
     source      => "$tmp_path/composer.phar",
-    require     => Exec["download_composer"],
+    require     => [
+      Exec["download_composer"],
+      File["$target_dir"],],
     group       => "staff",
-    mode        => 0775,
+    mode        => "0755",
   }
 
+  # run composer self-update
   exec { "update_composer":
     command     => "$target_dir/$composer_file self-update",
     require     => File["$target_dir/$composer_file"],
@@ -37,7 +46,7 @@ class composer($target_dir="/usr/local/bin", $composer_file = "composer") {
   augeas { "whitelist_phar":
     context     => "/files/etc/php5/conf.d/suhosin.ini/suhosin",
     changes     => "set suhosin.executor.include.whitelist phar",
-    require     => Class["augeas"],
+    require     => Package["php5-cli"],
   }
 
   augeas{ "allow_url_fopen":
