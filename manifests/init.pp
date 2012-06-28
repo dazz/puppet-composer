@@ -2,15 +2,15 @@ class composer(
   $target_dir      = '/usr/local/bin',
   $composer_file   = 'composer',
   $download_method = 'curl',
-  $php_package     = 'php_cli',
   $logoutput       = false) {
 
   include augeas
 
-  package { "$php_package":ensure => present, }
-
+  $php_package     = 'php_cli'
   $download_url = 'http://getcomposer.org/installer'
   $tmp_path     = '/home/vagrant'
+
+  package { $php_package:ensure => present, }
 
   # download composer
   if $download_method == 'curl' {
@@ -21,7 +21,7 @@ class composer(
       command     => "curl -s $download_url | php",
       cwd         => $tmp_path,
       require     => [
-        Package['curl', "$php_package"],
+        Package['curl', $php_package],
         Augeas['whitelist_phar', 'allow_url_fopen'], ],
       creates     => "$tmp_path/composer.phar",
       logoutput   => $logoutput,
@@ -44,7 +44,6 @@ class composer(
   else {
     notify('please set valid $download_method to curl or wget')
   }
-
 
   # check if directory exists
   file { $target_dir:
@@ -70,12 +69,13 @@ class composer(
   augeas { 'whitelist_phar':
     context     => '/files/etc/php5/conf.d/suhosin.ini/suhosin',
     changes     => 'set suhosin.executor.include.whitelist phar',
-    require     => Package["$php_package"],
+    require     => Package[$php_package],
   }
 
+  # set /etc/php5/cli/php.ini/PHP/allow_url_fopen = On
   augeas{ 'allow_url_fopen':
     context     => '/files/etc/php5/cli/php.ini/PHP',
     changes     => 'set allow_url_fopen On',
-    require     => Package["$php_package"],
+    require     => Package[$php_package],
   }
 }
