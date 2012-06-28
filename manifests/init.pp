@@ -6,9 +6,8 @@ class composer(
 
   include augeas
 
-  $php_package     = 'php_cli'
-  $download_url = 'http://getcomposer.org/installer'
-  $tmp_path     = '/home/vagrant'
+  $php_package     = 'php5-cli'
+  $tmp_path        = '/home/vagrant'
 
   package { $php_package:ensure => present, }
 
@@ -18,7 +17,7 @@ class composer(
     package { 'curl': ensure => present, }
 
     exec { 'download_composer':
-      command     => "curl -s $download_url | php",
+      command     => 'curl -s http://getcomposer.org/installer | php',
       cwd         => $tmp_path,
       require     => [
         Package['curl', $php_package],
@@ -27,7 +26,7 @@ class composer(
       logoutput   => $logoutput,
     }
   }
-  elseif $download_method == 'wget' {
+  elsif $download_method == 'wget' {
 
     package {'wget': ensure => present, }
 
@@ -42,7 +41,7 @@ class composer(
     }
   }
   else {
-    notify('please set valid $download_method to curl or wget')
+    fail("The param download_method $download_method is not valid. Please set download_method to curl or wget.")
   }
 
   # check if directory exists
