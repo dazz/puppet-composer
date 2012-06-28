@@ -6,7 +6,7 @@ class composer(
 
   include augeas
 
-  $php_package     = 'php_cli'
+  $php_package     = 'php5-cli'
   $download_url = 'http://getcomposer.org/installer'
   $tmp_path     = '/home/vagrant'
 
