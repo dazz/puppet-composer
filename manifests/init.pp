@@ -9,12 +9,16 @@ class composer(
   $php_package     = 'php5-cli'
   $tmp_path        = '/home/vagrant'
 
-  package { $php_package:ensure => present, }
+  if defined(Package[$php_package]) == false {
+    package { $php_package: ensure => present, }
+  }
 
   # download composer
   if $download_method == 'curl' {
 
-    package { 'curl': ensure => present, }
+    if defined(Package['curl']) == false {
+      package { 'curl': ensure => present, }
+    }
 
     exec { 'download_composer':
       command     => 'curl -s http://getcomposer.org/installer | php',
@@ -28,7 +32,9 @@ class composer(
   }
   elsif $download_method == 'wget' {
 
-    package {'wget': ensure => present, }
+    if defined(Package['wget']) == false {
+      package {'wget': ensure => present, }
+    }
 
     exec { 'download_composer':
       command     => 'wget http://getcomposer.org/composer.phar -O composer.phar',
