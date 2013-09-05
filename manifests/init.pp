@@ -21,6 +21,7 @@ class composer(
     }
 
     exec { 'download_composer':
+      path   => "/usr/bin:/usr/sbin:/bin", 
       command     => 'curl -s http://getcomposer.org/installer | php',
       cwd         => $tmp_path,
       require     => [
@@ -37,7 +38,8 @@ class composer(
     }
 
     exec { 'download_composer':
-      command     => 'wget http://getcomposer.org/composer.phar -O composer.phar',
+       path   => "/usr/bin:/usr/sbin:/bin", 
+       command     => 'wget http://getcomposer.org/composer.phar -O composer.phar',
       cwd         => $tmp_path,
       require     => [
         Package['wget'],
