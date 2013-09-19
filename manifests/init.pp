@@ -2,12 +2,12 @@ class composer(
   $target_dir      = '/usr/local/bin',
   $composer_file   = 'composer',
   $download_method = 'curl',
-  $logoutput       = false) {
+  $logoutput       = false,
+  $tmp_path        = '/home/vagrant') {
 
   include augeas
 
   $php_package     = 'php5-cli'
-  $tmp_path        = '/home/vagrant'
 
   if defined(Package[$php_package]) == false {
     package { $php_package: ensure => present, }
